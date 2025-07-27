@@ -1,0 +1,217 @@
+ 1. Create a new database:
+
+ use library system
+ 
+ 2. Create a collection:
+
+ db.createCollection("books")
+
+ 3. Insert Operations: 
+ 
+ db.books.insertMany
+([
+  {
+    title: 'Deep work',
+    author: 'Cal Newport',
+    genre: 'Productivity',
+    status: 'returned'
+  },
+  {
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    grnre: 'Self-help',
+    status: 'borrowed'
+  },
+  {
+    title: 'The Power of Now',
+    author: 'Eckhart Tolle',
+    genre: 'Spirituality',
+    status: 'borrowed'
+  },
+  {
+    title: 'Hooked',
+    author: 'Nir Eyal',
+    grnre: 'Product Design',
+    status: 'available'
+  },
+  {
+    title: 'Clean Code',
+    author: 'Robert C. Martin',
+    genre: 'Programming',
+    status: 'returned'
+  },
+  {
+    title: 'The Progmatic Programmer',
+    author: 'Andrew Hunt',
+    grnre: 'Programming',
+    status: 'available'
+  }
+])
+
+acknowledged: true,
+  insertedIds: 
+    '0': ObjectId('688475ba192350ebbaeec4a9'),
+    '1': ObjectId('688475ba192350ebbaeec4aa'),
+    '2': ObjectId('688478e4192350ebbaeec4ab'),
+    '3': ObjectId('688478e4192350ebbaeec4ac'),
+    '4': ObjectId('6884796f192350ebbaeec4ad'),
+    '5': ObjectId('6884796f192350ebbaeec4ae')
+
+ Explanation:
+   - use librarySystem: Creates the "librarySystem" database.
+   - db.createCollection("books"): Creates a new collection named "books" to store book records.
+   - db.books.insertMany([...]): Inserts all six book documents into the "books" collection in a single operation.
+
+4. Read Operation:
+
+db.books.find()
+
+
+  {
+    _id: ObjectId('688475ba192350ebbaeec4a9'),
+    title: 'Deep work',
+    author: 'Cal Newport',
+    genre: 'Productivity',
+    status: 'returned',
+    published_year: 2016
+  },
+  {
+    _id: ObjectId('688475ba192350ebbaeec4aa'),
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    grnre: 'Self-help',
+    status: 'borrowed',
+    published_year: 2018
+  },
+  {
+    _id: ObjectId('688478e4192350ebbaeec4ab'),
+    title: 'The Power of Now',
+    author: 'Eckhart Tolle',
+    genre: 'Spirituality',
+    status: 'borrowed',
+    published_year: 1997
+  },
+  {
+    _id: ObjectId('688478e4192350ebbaeec4ac'),
+    title: 'Hooked',
+    author: 'Nir Eyal',
+    grnre: 'Product Design',
+    status: 'available',
+    published_year: 2014
+  },
+  {
+    _id: ObjectId('6884796f192350ebbaeec4ad'),
+    title: 'Clean Code',
+    author: 'Robert C. Martin',
+    genre: 'Programming',
+    status: 'returned',
+    published_year: 2008
+  },
+  {
+    _id: ObjectId('6884796f192350ebbaeec4ae'),
+    title: 'The Progmatic Programmer',
+    author: 'Andrew Hunt',
+    grnre: 'Programming',
+    status: 'available',
+    published_year: 1999 
+  }
+
+
+5. Update Operations: 
+
+db.books.find({ author: "Andrew Hunt" })
+
+Output:
+
+{
+    _id: ObjectId('6884796f192350ebbaeec4ae'),
+    title: 'The Progmatic Programmer',
+    author: 'Andrew Hunt',
+    grnre: 'Programming',
+    status: 'available'
+    published_year: 1999 
+  }
+
+db.books.updateOne(
+  { title: "Clean Code" },
+  { $set: {status: available } }
+)
+
+
+Explanation:
+  -updateOne({ title: "Clean Code" }, { $set: { status: "available" } }): Updates the status field to "available" for the book titled Clean Code.
+  -find(): Retrieves all documents from the books collection.
+
+
+6. Delete Operation:
+
+db.books.deleteOne({ published_year: 1997 })
+
+// { acknowledged: true, deletedCount: 1 }
+
+db.books.deleteMany({ : { $lt: 2016 } })
+// { acknowledged: true, deletedCount: 4 }
+
+Explanation:
+  -deleteOne({ published_year: 1997 }): Deletes the first document where the published_year is 1997 (not 1951—make sure the year matches your intent).
+  -deleteMany({ published_year: { $lt: 2016 } }): Deletes all documents where the published_year is less than 2016.
+  -Both commands return a result object indicating whether the operation was acknowledged and how many documents were deleted.
+
+7. Advanced Query:
+
+db.books.find({
+  $and: [
+    { author: "Cal Newport" },
+    { status: "returned" }
+  ]
+})
+
+Output:  
+ 
+ {
+    _id: ObjectId('688475ba192350ebbaeec4a9'),
+    title: 'Deep work',
+    author: 'Cal Newport',
+    genre: 'Productivity',
+    status: 'returned',
+    published_year: 2016
+  }
+
+
+Explanation:
+  -Finds documents where both conditions match.
+  -author must be "Cal Newport"
+  -status must be "returned"
+  -Returns any book that satisfies both criteria at once.
+
+
+ db.books.find({
+  $or: [
+    { status: "borrowed" },
+    { author: "Andrew Hunt" }
+  ]
+}) 
+
+Output:
+
+ {
+    _id: ObjectId('688475ba192350ebbaeec4aa'),
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    grnre: 'Self-help',
+    status: 'borrowed'
+  },
+
+ {
+    _id: ObjectId('688478e4192350ebbaeec4ab'),
+    title: 'The Power of Now',
+    author: 'Eckhart Tolle',
+    genre: 'Spirituality',
+    status: 'borrowed'
+  },
+
+
+Explanation:
+  -Finds documents where at least one condition is true.
+  -Either the status is "borrowed", or the author is "Andrew Hunt"
+  -Returns books that meet any one of the criteria, not necessarily both.
